@@ -5,8 +5,7 @@ A full-stack responsive web application built with the MERN stack for managing p
 ---
 
 ##  Live Demo & Deployment
-- **Frontend App:** [Live App Link](https://mern-task-manager-frontend.onrender.com)
-- **Backend API:** [API Endpoint](https://mern-task-manager-sa25.onrender.com)
+- https://mern-task-manager-ui.onrender.com
 
 ---
 

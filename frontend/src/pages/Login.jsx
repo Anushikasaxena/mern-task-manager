@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import API from '../services/api';
 
+
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -39,6 +40,11 @@ export default function Login() {
                     className="w-full p-2 mb-6 border rounded"
                     required
                 />
+                <div className="flex justify-end mb-4">
+                    <Link to="/forgot-password" className="text-sm text-blue-600 hover:underline">
+                        Forgot Password?
+                    </Link>
+                </div>
                 <button type="submit" className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">
                     Login
                 </button>

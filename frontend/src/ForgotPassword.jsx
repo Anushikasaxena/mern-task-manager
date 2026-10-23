@@ -10,7 +10,7 @@ const ForgotPassword = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post('https://mern-task-manager-backend.onrender.com/api/auth/forgot-password', { email });
+            const res = await axios.post('https://mern-task-manager-ui.onrender.com//api/auth/forgot-password', { email });
             setMessage(res.data.message);
             setError('');
         } catch (err) {

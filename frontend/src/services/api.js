@@ -1,4 +1,3 @@
-import axios from 'react-native-axios'; // ya 'axios' (jo aap use kar rahe ho)
 import axios from 'axios';
 
 const API = axios.create({

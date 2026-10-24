@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create Axios instance pointing to backend
 const API = axios.create({
-    baseURL: 'http://localhost:5000/api',
+    baseURL: 'https://mern-stack-manager-backend.onrender.com/api,
     headers: {
         'Content-Type': 'application/json',
     },

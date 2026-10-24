@@ -23,4 +23,4 @@ live link:- https://mern-task-manager-1-1wl8.onrender.com
 - **Backend:** Node.js, Express.js
 - **Database:** MongoDB Atlas (Mongoose ODM)
 - **Deployment:** Render (Static Site & Web Service)
--
+

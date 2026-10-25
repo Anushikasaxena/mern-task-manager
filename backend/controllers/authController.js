@@ -1,75 +1,6 @@
 const User = require('../models/User');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-
-// Helper function to generate JWT token
-const generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET || 'secret123', {
-        expiresIn: '30d',
-    });
-};
-
-// 1. Register Controller
-exports.registerUser = async (req, res) => {
-    try {
-        const { name, email, password } = req.body;
-
-        const userExists = await User.findOne({ email });
-        if (userExists) {
-            return res.status(400).json({ message: "User already exists" });
-        }
-
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-
-        const user = await User.create({
-            name,
-            email,
-            password: hashedPassword,
-        });
-
-        if (user) {
-            res.status(201).json({
-                _id: user._id,
-                name: user.name,
-                email: user.email,
-                token: generateToken(user._id),
-            });
-        } else {
-            res.status(400).json({ message: "Invalid user data" });
-        }
-    } catch (error) {
-        console.error("REGISTER ERROR:", error.message);
-        res.status(500).json({ message: "Server error", error: error.message });
-    }
-};
-
-// 2. Login Controller
-exports.loginUser = async (req, res) => {
-    try {
-        const { email, password } = req.body;
-
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(400).json({ message: "Invalid credentials" });
-        }
-
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(400).json({ message: "Invalid credentials" });
-        }
-
-        res.status(200).json({
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-            token: generateToken(user._id),
-        });
-    } catch (error) {
-        console.error("LOGIN ERROR:", error.message);
-        res.status(500).json({ message: "Server error", error: error.message });
-    }
-};
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
 
 // 3. Forgot Password Controller
 exports.forgotPassword = async (req, res) => {
@@ -79,6 +10,39 @@ exports.forgotPassword = async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
+
+        // Generate a reset token
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        user.resetPasswordToken = resetToken;
+        user.resetPasswordExpire = Date.now() + 15 * 60 * 1000; // 15 minutes validity
+        await user.save();
+
+        // Configure Nodemailer transporter using Render Environment Variables
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+            }
+        });
+
+        const resetUrl = `${process.env.CLIENT_URL || 'https://mern-task-manager-1-1wl8.onrender.com'}/reset-password/${resetToken}`;
+
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: user.email,
+            subject: 'Password Reset Request - Task Manager',
+            html: `
+        <h3>Password Reset Request</h3>
+        <p>You requested to reset your password. Click the link below to reset it:</p>
+        <a href="${resetUrl}" target="_blank">${resetUrl}</a>
+        <p>This link will expire in 15 minutes.</p>
+      `
+        };
+
+        // Send the email
+        await transporter.sendMail(mailOptions);
+
         res.status(200).json({ message: "Forgot password link sent successfully" });
     } catch (error) {
         console.error("FORGOT PASSWORD ERROR:", error.message);

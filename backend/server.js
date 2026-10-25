@@ -9,9 +9,9 @@ const app = express();
 // Middleware
 app.use(express.json());
 
-// CORS Configuration - Frontend URL securely connected
+// CORS Configuration - Strict and secure
 app.use(cors({
-    origin: process.env.CLIENT_URL || 'https://mern-task-managererr.onrender.com',
+    origin: process.env.CLIENT_URL || 'https://mern-task-manager-1-1wl8.onrender.com',
     credentials: true
 }));
 
